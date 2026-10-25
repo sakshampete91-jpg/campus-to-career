@@ -1,0 +1,197 @@
+# ============================================================
+# Campus to Career — .gitignore
+# ============================================================
+
+# ────────────────────────────────────────────────────────────
+# Python
+# ────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+pip-wheel-metadata/
+*.pyc
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Alembic
+# (keep alembic/versions tracked, but ignore local state)
+alembic/versions/__pycache__/
+
+# ────────────────────────────────────────────────────────────
+# Node.js / Next.js
+# ────────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+.vercel/
+.swc/
+*.tsbuildinfo
+next-env.d.ts
+
+# npm / yarn / pnpm
+.npm/
+.yarn/
+.pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json.bak
+
+# Vitest / Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+coverage/
+
+# ────────────────────────────────────────────────────────────
+# Environment / Secrets
+# ────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# ────────────────────────────────────────────────────────────
+# Sensitive / Private Files
+# ────────────────────────────────────────────────────────────
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.csr
+secrets/
+private/
+
+# ────────────────────────────────────────────────────────────
+# Uploaded & Generated Files
+# ────────────────────────────────────────────────────────────
+uploads/
+resumes/
+generated_pdfs/
+
+# ────────────────────────────────────────────────────────────
+# AI Model Files (large binaries — use Ollama instead)
+# ────────────────────────────────────────────────────────────
+*.gguf
+*.ggml
+*.bin
+*.pt
+*.pth
+*.onnx
+models/
+
+# ────────────────────────────────────────────────────────────
+# OS Files
+# ────────────────────────────────────────────────────────────
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ────────────────────────────────────────────────────────────
+# IDE / Editor Files
+# ────────────────────────────────────────────────────────────
+
+# VS Code (keep extensions/launch shared, hide personal settings)
+.vscode/settings.json
+.vscode/*.code-workspace
+
+# JetBrains / PyCharm / WebStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+*.swp
+*.swo
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ────────────────────────────────────────────────────────────
+# Logs
+# ────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+
+# ────────────────────────────────────────────────────────────
+# Miscellaneous
+# ────────────────────────────────────────────────────────────
+.cache/
+tmp/
+temp/
+scratch/
+*.bak
+*.swp
+*.orig

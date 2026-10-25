@@ -1,0 +1,45 @@
+{
+  "name": "campus-to-career-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.13",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "zustand": "^5.0.0",
+    "react-hook-form": "^7.53.0",
+    "zod": "^3.23.8",
+    "@hookform/resolvers": "^3.9.0",
+    "lucide-react": "^0.453.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.3",
+    "sonner": "^1.5.0",
+    "framer-motion": "^11.11.1",
+    "react-pdf": "^9.1.1",
+    "axios": "^1.7.7",
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.2",
+    "@vitejs/plugin-react": "^4.3.2",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/jest-dom": "^6.5.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.15"
+  }
+}

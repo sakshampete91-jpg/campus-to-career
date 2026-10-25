@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-navy: #0B1020;
+  --color-navy-elevated: #121A2B;
+  --color-navy-secondary: #182235;
+  --color-emerald: #10B981;
+  --color-gold: #D6B779;
+  --color-border: #1E2D45;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-risk-red: #EF4444;
+  --color-risk-amber: #F59E0B;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-navy);
+  color: var(--color-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-navy-elevated);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-emerald);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--color-text-primary);
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-gradient-emerald {
+    @apply bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent;
+  }
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold-light to-gold bg-clip-text text-transparent;
+  }
+  .border-subtle {
+    border-color: var(--color-border);
+  }
+  .bg-card {
+    background-color: var(--color-navy-elevated);
+  }
+  .bg-input {
+    background-color: var(--color-navy-secondary);
+  }
+  .glass-card {
+    @apply bg-navy-elevated/80 backdrop-blur-sm border border-border rounded-xl;
+  }
+}
+
+/* Animations */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-on-scroll {
+    animation: fadeInUp 0.6s ease-out both;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Kanban board styles */
+.kanban-column {
+  min-height: 200px;
+}
+
+/* Risk score colors */
+.risk-very-high { color: #EF4444; }
+.risk-high { color: #F59E0B; }
+.risk-moderate { color: #EAB308; }
+.risk-low { color: #10B981; }
+.risk-very-low { color: #10B981; }
+
+.bg-risk-very-high { background-color: rgba(239, 68, 68, 0.15); }
+.bg-risk-high { background-color: rgba(245, 158, 11, 0.15); }
+.bg-risk-moderate { background-color: rgba(234, 179, 8, 0.15); }
+.bg-risk-low { background-color: rgba(16, 185, 129, 0.15); }
