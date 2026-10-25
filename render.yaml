@@ -1,0 +1,43 @@
+services:
+  # -------------------------------------------------------------
+  # Backend API Service (FastAPI)
+  # -------------------------------------------------------------
+  - type: web
+    name: campus-to-career-backend
+    env: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: SECRET_KEY
+        generateValue: true
+
+  # -------------------------------------------------------------
+  # Frontend Web Service (Next.js)
+  # -------------------------------------------------------------
+  - type: web
+    name: campus-to-career-frontend
+    env: node
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: campus-to-career-backend
+          property: host
+          format: https://${host}/api/v1

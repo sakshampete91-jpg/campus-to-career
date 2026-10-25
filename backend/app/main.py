@@ -44,12 +44,25 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    """Create database tables and upload directory on startup."""
+    """Create database tables, upload directory, and auto-seed if empty."""
     logger.info("Starting %s v%s", settings.APP_NAME, settings.APP_VERSION)
     create_tables()
     upload_dir = os.path.abspath(settings.UPLOAD_DIR)
     os.makedirs(upload_dir, exist_ok=True)
     logger.info("Upload directory: %s", upload_dir)
+
+    # Auto-seed database for first-time cloud container deployment
+    try:
+        from app.core.database import SessionLocal
+        from app.models.user import User
+        from seed_data import seed
+        db = SessionLocal()
+        if db.query(User).count() == 0:
+            logger.info("Empty database detected in cloud container. Auto-seeding demo data...")
+            seed()
+        db.close()
+    except Exception as exc:
+        logger.warning("Auto-seed on startup: %s", exc)
 
 
 # ---------------------------------------------------------------------------
