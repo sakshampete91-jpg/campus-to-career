@@ -117,7 +117,8 @@ generated_pdfs/
 *.pt
 *.pth
 *.onnx
-models/
+/models/
+!backend/app/models/
 
 # ────────────────────────────────────────────────────────────
 # OS Files
