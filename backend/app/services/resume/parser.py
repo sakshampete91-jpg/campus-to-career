@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 import logging
+import os
 import re
 from typing import Any, Dict
 
@@ -60,34 +61,68 @@ def _extract_sections(text: str) -> Dict[str, str]:
     return sections
 
 
-def _extract_name_from_header(header_text: str) -> str:
-    """Heuristic: first non-empty line of the header is usually the name."""
+COMMON_TECH_CATALOG = [
+    "Python", "JavaScript", "TypeScript", "React", "Next.js", "Node.js", "HTML", "CSS", "SQL",
+    "PostgreSQL", "MongoDB", "MySQL", "Git", "GitHub", "Docker", "Kubernetes", "AWS", "Azure",
+    "GCP", "Linux", "FastAPI", "Django", "Flask", "Tailwind", "Java", "C++", "C", "C#",
+    ".NET", "PHP", "Ruby", "Rust", "Go", "Kotlin", "Swift", "PyTorch", "TensorFlow", "Keras",
+    "Scikit-Learn", "Pandas", "NumPy", "Matplotlib", "Figma", "UI/UX", "GraphQL", "REST API",
+    "Redux", "Express", "Vite", "OpenCV", "NLP", "LLM", "Prompt Engineering", "Machine Learning",
+    "Deep Learning", "Data Analysis", "Artificial Intelligence", "Tableau", "Power BI", "Excel",
+]
+
+
+def _extract_name_from_header(header_text: str, fallback_filename: str = "") -> str:
+    """Heuristic: look for candidate name in header lines or top text."""
     for line in header_text.split("\n"):
         clean = line.strip()
-        if clean and len(clean.split()) >= 2 and not _EMAIL_RE.search(clean):
+        if (
+            clean
+            and 1 <= len(clean.split()) <= 4
+            and len(clean) < 40
+            and not _EMAIL_RE.search(clean)
+            and not re.search(r"\d|http|github|linkedin|resume|cv", clean, re.IGNORECASE)
+        ):
             return clean
+
+    # Clean filename fallback if provided
+    if fallback_filename:
+        base = re.sub(r"\.(pdf|docx)$", "", fallback_filename, flags=re.IGNORECASE)
+        clean_name = re.sub(r"(professional|master|updated|latest|resume|cv)", "", base, flags=re.IGNORECASE)
+        clean_name = re.sub(r"[_\-]+", " ", clean_name).strip()
+        if clean_name and len(clean_name) >= 3:
+            return clean_name.title()
+
     return ""
 
 
-def _build_parsed_data(text: str) -> Dict[str, Any]:
+def _build_parsed_data(text: str, filename: str = "") -> Dict[str, Any]:
     """Build structured parsed_data dict from raw text."""
     contact = _extract_contact_info(text)
     sections = _extract_sections(text)
 
-    header_text = sections.get("header", "")
-    name = _extract_name_from_header(header_text)
+    header_text = sections.get("header", "") or "\n".join(text.split("\n")[:10])
+    name = _extract_name_from_header(header_text, filename)
 
     # Skills: split by commas, bullets, or newlines
     skills_text = sections.get("skills", "")
     skill_tokens = re.split(r"[,•|\n\t]+", skills_text)
-    skills = [s.strip() for s in skill_tokens if 2 < len(s.strip()) < 50]
+    extracted_skills = [s.strip() for s in skill_tokens if 1 < len(s.strip()) < 50]
+
+    # Keyword scan across the whole document for common tech skills
+    text_lower = text.lower()
+    for tech in COMMON_TECH_CATALOG:
+        pattern = r"\b" + re.escape(tech.lower()) + r"\b"
+        if re.search(pattern, text_lower):
+            if not any(tech.lower() == s.lower() for s in extracted_skills):
+                extracted_skills.append(tech)
 
     return {
         "name": name,
         "email": contact["email"],
         "phone": contact["phone"],
         "urls": contact["urls"],
-        "skills": skills,
+        "skills": extracted_skills,
         "summary": sections.get("summary", ""),
         "experience": sections.get("experience", ""),
         "education": sections.get("education", ""),
@@ -120,7 +155,8 @@ def parse_pdf(file_path: str) -> Dict[str, Any]:
     if not raw_text.strip():
         return {"raw_text": "", "error": "Could not extract text from PDF."}
 
-    parsed = _build_parsed_data(raw_text)
+    filename = os.path.basename(file_path)
+    parsed = _build_parsed_data(raw_text, filename=filename)
     parsed["raw_text"] = raw_text
     return parsed
 
@@ -156,6 +192,7 @@ def parse_docx(file_path: str) -> Dict[str, Any]:
     if not raw_text.strip():
         return {"raw_text": "", "error": "Could not extract text from DOCX."}
 
-    parsed = _build_parsed_data(raw_text)
+    filename = os.path.basename(file_path)
+    parsed = _build_parsed_data(raw_text, filename=filename)
     parsed["raw_text"] = raw_text
     return parsed

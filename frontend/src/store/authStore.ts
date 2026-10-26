@@ -21,33 +21,25 @@ const DEFAULT_DEMO_USER: User = {
   email: 'student1@demo.campustocareer.example',
   full_name: 'Jamie Chen',
   role: 'student',
-  headline: 'Computer Science Student & Full-Stack Developer',
   skills: [
-    { name: 'Python', proficiency: 'advanced' },
-    { name: 'React', proficiency: 'intermediate' },
-    { name: 'TypeScript', proficiency: 'intermediate' },
-    { name: 'SQL', proficiency: 'intermediate' },
-    { name: 'FastAPI', proficiency: 'intermediate' },
-    { name: 'Git', proficiency: 'advanced' },
+    { name: 'Python', level: 'advanced' },
+    { name: 'React', level: 'intermediate' },
+    { name: 'TypeScript', level: 'intermediate' },
+    { name: 'SQL', level: 'intermediate' },
+    { name: 'FastAPI', level: 'intermediate' },
+    { name: 'Git', level: 'advanced' },
   ],
-  education: [
-    {
-      institution: 'University Engineering Department',
-      degree: 'B.S. in Computer Science',
-      graduation_year: 2026,
-    },
-  ],
-  projects: [
-    {
-      title: 'Real-Time Chat Application',
-      description: 'Built WebSocket-based chat system with Next.js and Redis.',
-      tech_stack: ['Next.js', 'Redis', 'WebSockets'],
-    },
-  ],
-  work_type_preference: ['remote', 'hybrid'],
-  opportunity_type_preference: ['internship', 'entry_level'],
-  is_active: true,
-  created_at: new Date().toISOString(),
+  education: {
+    institution: 'University Engineering Department',
+    degree: 'B.S.',
+    field_of_study: 'Computer Science',
+    start_year: 2022,
+    end_year: 2026,
+  },
+  work_preferences: {
+    work_types: ['remote', 'hybrid'],
+    opportunity_types: ['internship', 'full-time'],
+  },
 }
 
 function extractErrorMessage(err: unknown, fallback: string): string {

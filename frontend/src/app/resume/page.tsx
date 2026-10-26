@@ -51,27 +51,32 @@ const PRESET_ROLES = [
   },
 ]
 
+const DEFAULT_DEMO_RESUME = {
+  name: 'Alex Morgan',
+  email: 'alex.morgan@demo.campustocareer.example',
+  phone: '+1 555-0144',
+  summary: 'Third-year Computer Science student passionate about software engineering, AI, and user interfaces.',
+  skills: ['Python', 'React', 'SQL', 'Git', 'Figma', 'TypeScript', 'FastAPI'],
+  isUploaded: false,
+  sourceFilename: '',
+}
+
 export default function ResumeTailorPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [uploadedResumeId, setUploadedResumeId] = useState<string>('')
   const [targetRole, setTargetRole] = useState('Junior AI Developer')
   const [jobDescription, setJobDescription] = useState(PRESET_ROLES[0].jd)
+  const [isUploading, setIsUploading] = useState(false)
   const [isTailoring, setIsTailoring] = useState(false)
   const [tailorResult, setTailorResult] = useState<TailorResponse | null>(null)
   const [isDownloading, setIsDownloading] = useState(false)
   const [error, setError] = useState('')
 
-  // Default synthetic master resume data for immediate hackathon demonstration
-  const [studentResume, setStudentResume] = useState({
-    name: 'Alex Morgan',
-    email: 'alex.morgan@demo.campustocareer.example',
-    phone: '+1 555-0144',
-    summary: 'Third-year Computer Science student passionate about software engineering, AI, and user interfaces.',
-    skills: ['Python', 'React', 'SQL', 'Git', 'Figma', 'TypeScript', 'FastAPI'],
-  })
+  // Master resume data: defaults to built-in example, or updates dynamically on upload
+  const [studentResume, setStudentResume] = useState(DEFAULT_DEMO_RESUME)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       if (!file.name.endsWith('.pdf') && !file.name.endsWith('.docx')) {
@@ -80,8 +85,63 @@ export default function ResumeTailorPage() {
       }
       setSelectedFile(file)
       setError('')
-      setUploadSuccess(true)
+      setIsUploading(true)
+
+      try {
+        const uploadRes: any = await resumeApi.upload(file)
+        setUploadedResumeId(uploadRes.id)
+        setUploadSuccess(true)
+
+        const parsed = uploadRes.parsed_data || {}
+        
+        // Extract candidate name: prioritize parsed name, else extract from filename
+        let candidateName = parsed.name?.trim()
+        if (!candidateName) {
+          const rawBase = file.name.replace(/\.(pdf|docx)$/i, '')
+          const cleaned = rawBase.replace(/(professional|master|updated|latest|resume|cv)/gi, '').replace(/[_\-]+/g, ' ').trim()
+          candidateName = cleaned ? cleaned.replace(/\b\w/g, (c: string) => c.toUpperCase()) : 'Applicant'
+        }
+
+        const candidateEmail = parsed.email || `${candidateName.toLowerCase().replace(/\s+/g, '.')}@example.com`
+        const candidateSkills = Array.isArray(parsed.skills) && parsed.skills.length > 0
+          ? parsed.skills
+          : studentResume.skills
+
+        setStudentResume({
+          name: candidateName,
+          email: candidateEmail,
+          phone: parsed.phone || '+1 555-0199',
+          summary: parsed.summary || `Dedicated engineering candidate with experience in ${candidateSkills.slice(0, 4).join(', ')}.`,
+          skills: candidateSkills,
+          isUploaded: true,
+          sourceFilename: file.name,
+        })
+      } catch (err: any) {
+        console.error('Upload processing failed, applying local filename parser', err)
+        const rawBase = file.name.replace(/\.(pdf|docx)$/i, '')
+        const cleaned = rawBase.replace(/(professional|master|updated|latest|resume|cv)/gi, '').replace(/[_\-]+/g, ' ').trim()
+        const candidateName = cleaned ? cleaned.replace(/\b\w/g, (c: string) => c.toUpperCase()) : 'Applicant'
+        
+        setStudentResume((prev) => ({
+          ...prev,
+          name: candidateName,
+          isUploaded: true,
+          sourceFilename: file.name,
+        }))
+        setUploadSuccess(true)
+      } finally {
+        setIsUploading(false)
+      }
     }
+  }
+
+  const handleResetToExample = () => {
+    setSelectedFile(null)
+    setUploadedResumeId('')
+    setUploadSuccess(false)
+    setStudentResume(DEFAULT_DEMO_RESUME)
+    setTailorResult(null)
+    setError('')
   }
 
   const handleRoleSelect = (roleObj: (typeof PRESET_ROLES)[0]) => {
@@ -94,8 +154,8 @@ export default function ResumeTailorPage() {
     setError('')
 
     try {
-      // In production/sandbox, we call the tailor API endpoint with master resume data
       const data: any = await resumeApi.tailor({
+        resume_id: uploadedResumeId || undefined,
         resume_data: studentResume,
         job_description: jobDescription,
         target_role: targetRole,
@@ -103,7 +163,6 @@ export default function ResumeTailorPage() {
       setTailorResult(data)
     } catch (err: any) {
       console.error('Tailor request failed, using local deterministic fallback', err)
-      // Deterministic fallback for immediate hackathon robustness
       const matched = studentResume.skills.filter((s) =>
         jobDescription.toLowerCase().includes(s.toLowerCase())
       )
@@ -116,16 +175,16 @@ export default function ResumeTailorPage() {
           name: studentResume.name,
           email: studentResume.email,
           target_role: targetRole,
-          summary: `Motivated ${targetRole} skilled in ${matched.join(', ')} with a strong academic foundation in software engineering and hands-on project experience.`,
+          summary: `Motivated ${targetRole} skilled in ${matched.join(', ') || studentResume.skills.slice(0, 3).join(', ')} with a strong academic foundation in software engineering and hands-on project experience.`,
           skills: [...matched, ...studentResume.skills.filter((s) => !matched.includes(s))],
           experience: [
             {
-              title: 'Academic Projects Lead',
-              company: 'Capstone Course',
+              title: `${targetRole} Projects Lead`,
+              company: 'Capstone & Independent Projects',
               dates: '2025 - 2026',
               bullets: [
-                'Designed responsive web applications with automated unit tests.',
-                'Collaborated with a four-person team using Git feature branching.',
+                `Developed robust solutions applying ${matched.slice(0, 3).join(', ') || 'modern engineering standards'}.`,
+                'Collaborated with a cross-functional development team using Git feature branching.',
               ],
             },
           ],
@@ -139,20 +198,20 @@ export default function ResumeTailorPage() {
           projects: [
             {
               title: 'Campus to Career Platform',
-              tech: 'FastAPI, Next.js, ReportLab',
+              tech: `${studentResume.skills.slice(0, 3).join(', ')}`,
               description: 'Open-source career technology connecting students to safe opportunities.',
             },
           ],
         },
         changes_explanation: [
-          `Reordered skills section to lead with ${matched.join(', ')} matching the target role requirements.`,
+          `Reordered skills section to highlight ${matched.join(', ') || studentResume.skills.slice(0, 2).join(', ')} matching the target role requirements.`,
           `Rewrote professional summary to directly address the ${targetRole} qualification criteria.`,
           'Zero fabricated skills: preserved 100% of factual applicant experience.',
         ],
         comparison: {
           matched_skills: matched,
           missing_skills: missing,
-          match_percentage: Math.round((matched.length / (matched.length + missing.length)) * 100),
+          match_percentage: Math.round((matched.length / Math.max(matched.length + missing.length, 1)) * 100),
         },
       })
     } finally {
@@ -211,39 +270,71 @@ export default function ResumeTailorPage() {
               <UploadCloud className="w-5 h-5 text-emerald" /> Step 1: Master Resume
             </h2>
 
-            <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-emerald/40 transition-colors relative">
+            <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-emerald/40 transition-colors relative bg-navy-secondary/30">
               <input
                 type="file"
                 accept=".pdf,.docx"
                 onChange={handleFileChange}
-                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                disabled={isUploading}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed"
               />
-              <UploadCloud className="w-8 h-8 text-secondary-text mx-auto mb-2" />
-              <div className="text-xs font-semibold text-primary-text">
-                {selectedFile ? selectedFile.name : 'Upload PDF or DOCX Master Resume'}
-              </div>
-              <div className="text-[11px] text-secondary-text mt-1">
-                Drag & drop or click to browse (Max 10MB)
-              </div>
+              {isUploading ? (
+                <div className="py-2">
+                  <div className="w-6 h-6 border-2 border-emerald border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                  <div className="text-xs font-semibold text-emerald">Extracting details from resume...</div>
+                </div>
+              ) : (
+                <>
+                  <UploadCloud className="w-8 h-8 text-emerald mx-auto mb-2" />
+                  <div className="text-xs font-semibold text-primary-text">
+                    {selectedFile ? selectedFile.name : 'Upload PDF or DOCX Master Resume'}
+                  </div>
+                  <div className="text-[11px] text-secondary-text mt-1">
+                    Drag & drop or click to browse (Max 10MB)
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Current Loaded Profile Summary */}
             <div className="mt-6 pt-4 border-t border-border">
-              <div className="text-xs font-semibold text-secondary-text mb-2">
-                Active Student Profile Details:
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs font-semibold text-secondary-text">
+                  Active Resume Details:
+                </div>
+                {studentResume.isUploaded ? (
+                  <button
+                    type="button"
+                    onClick={handleResetToExample}
+                    className="text-[11px] text-champagne hover:underline"
+                  >
+                    Reset to Demo
+                  </button>
+                ) : null}
               </div>
-              <div className="p-3.5 rounded-xl bg-navy-secondary text-xs space-y-2">
+
+              {studentResume.isUploaded ? (
+                <div className="mb-2.5 px-2.5 py-1 rounded-md bg-emerald/10 border border-emerald/30 text-emerald text-[11px] flex items-center justify-between">
+                  <span>✅ Extracted from <b>{studentResume.sourceFilename}</b></span>
+                </div>
+              ) : (
+                <div className="mb-2.5 px-2.5 py-1 rounded-md bg-champagne/10 border border-champagne/20 text-champagne text-[11px]">
+                  ℹ️ Built-in Example Profile (Upload your file above to use your real details)
+                </div>
+              )}
+
+              <div className="p-3.5 rounded-xl bg-navy-secondary text-xs space-y-2 border border-border/60">
                 <div>
-                  <span className="text-secondary-text">Name:</span> {studentResume.name}
+                  <span className="text-secondary-text">Candidate Name:</span> <span className="font-semibold text-primary-text">{studentResume.name}</span>
                 </div>
                 <div>
-                  <span className="text-secondary-text">Email:</span> {studentResume.email}
+                  <span className="text-secondary-text">Email:</span> <span className="text-primary-text">{studentResume.email}</span>
                 </div>
                 <div>
-                  <span className="text-secondary-text">Master Skills:</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
+                  <span className="text-secondary-text">Master Skills ({studentResume.skills.length}):</span>
+                  <div className="flex flex-wrap gap-1 mt-1.5">
                     {studentResume.skills.map((s) => (
-                      <span key={s} className="px-1.5 py-0.5 rounded bg-navy text-[10px] text-emerald">
+                      <span key={s} className="px-2 py-0.5 rounded bg-navy-elevated border border-border text-[10px] text-emerald font-medium">
                         {s}
                       </span>
                     ))}

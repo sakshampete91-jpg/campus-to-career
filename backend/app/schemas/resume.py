@@ -20,7 +20,8 @@ class ResumeMetaResponse(BaseModel):
 
 
 class TailorRequest(BaseModel):
-    resume_id: str
+    resume_id: Optional[str] = None
+    resume_data: Optional[Dict[str, Any]] = None
     job_description: str
     target_role: str
 
