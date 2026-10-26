@@ -1,5 +1,8 @@
 """Test configuration and shared fixtures for Campus to Career backend."""
 import os
+
+os.environ["TESTING"] = "true"
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine

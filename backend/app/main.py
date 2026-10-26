@@ -45,6 +45,9 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     """Create database tables, upload directory, and auto-seed if empty."""
+    if os.environ.get("TESTING") == "true":
+        return
+
     logger.info("Starting %s v%s", settings.APP_NAME, settings.APP_VERSION)
     create_tables()
     upload_dir = os.path.abspath(settings.UPLOAD_DIR)

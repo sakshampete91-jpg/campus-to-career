@@ -23,9 +23,9 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./campus_to_career.db"
 
-    # Ollama AI (Google Gemma 2 open-weight model)
+    # Ollama AI (Google Gemma 4 / Gemma 2 open-weight models)
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_MODEL: str = "gemma2:2b"
+    OLLAMA_MODEL: str = "gemma4:e4b"
 
     # File uploads
     UPLOAD_DIR: str = "./uploads"

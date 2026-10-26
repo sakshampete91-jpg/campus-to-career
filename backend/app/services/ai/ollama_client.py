@@ -61,21 +61,25 @@ Respond ONLY with a valid JSON object:
 
 
 async def _resolve_model(client: httpx.AsyncClient) -> str:
-    """Resolve the active model. Prefers Google Gemma 2 (gemma2:2b), with smart local model fallback."""
+    """Resolve the active model. Prioritizes Google Gemma 4 (gemma4:e4b / gemma4:e2b), then Gemma 2, with smart fallback."""
     preferred = settings.OLLAMA_MODEL
     try:
         res = await client.get(f"{settings.OLLAMA_BASE_URL}/api/tags")
         if res.status_code == 200:
             models = [m.get("name", "") for m in res.json().get("models", [])]
-            # 1. Prioritize any installed Google Gemma model
+            # 1. Prioritize Google Gemma 4 models
             for m in models:
-                if "gemma" in m.lower():
+                if "gemma4" in m.lower():
                     return m
             # 2. Check if preferred model is directly available
             for m in models:
                 if preferred.lower() in m.lower():
                     return m
-            # 3. Fallback to any local LLM generation model (skip embedders)
+            # 3. Check for any Google Gemma 2 or Gemma model
+            for m in models:
+                if "gemma" in m.lower():
+                    return m
+            # 4. Fallback to any local LLM generation model (skip embedders)
             for m in models:
                 if "embed" not in m.lower():
                     return m
