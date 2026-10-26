@@ -47,9 +47,9 @@ export default function AboutPage() {
             <div className="w-10 h-10 rounded-lg bg-emerald/10 border border-emerald/20 flex items-center justify-center text-emerald mb-3">
               <Code className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-lg mb-2">Open-Weight AI (Llama 3.2)</h3>
+            <h3 className="font-bold text-lg mb-2">Open-Weight AI (Google Gemma 2 via Ollama)</h3>
             <p className="text-xs text-secondary-text leading-relaxed">
-              We leverage Meta&apos;s open-weight <code className="text-emerald">llama3.2:1b</code> model running locally via Ollama. No mandatory paid API keys, no credit cards, and a verified deterministic rule fallback when local inference runtimes are offline.
+              We leverage Google&apos;s open-weight <code className="text-emerald">gemma2:2b</code> model running locally via Ollama. No mandatory paid API keys, no credit cards, zero cloud data leakage, and a verified deterministic rule fallback when local inference runtimes are offline.
             </p>
           </div>
 

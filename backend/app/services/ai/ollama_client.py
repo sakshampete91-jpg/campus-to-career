@@ -60,8 +60,32 @@ Respond ONLY with a valid JSON object:
 }}"""
 
 
+async def _resolve_model(client: httpx.AsyncClient) -> str:
+    """Resolve the active model. Prefers Google Gemma 2 (gemma2:2b), with smart local model fallback."""
+    preferred = settings.OLLAMA_MODEL
+    try:
+        res = await client.get(f"{settings.OLLAMA_BASE_URL}/api/tags")
+        if res.status_code == 200:
+            models = [m.get("name", "") for m in res.json().get("models", [])]
+            # 1. Prioritize any installed Google Gemma model
+            for m in models:
+                if "gemma" in m.lower():
+                    return m
+            # 2. Check if preferred model is directly available
+            for m in models:
+                if preferred.lower() in m.lower():
+                    return m
+            # 3. Fallback to any local LLM generation model (skip embedders)
+            for m in models:
+                if "embed" not in m.lower():
+                    return m
+    except Exception:
+        pass
+    return preferred
+
+
 async def analyze_listing_for_fraud(listing_text: str, company_name: str) -> Dict[str, Any]:
-    """Call Ollama to contextually analyse a listing for fraud signals.
+    """Call Ollama (Google Gemma 2) to contextually analyse a listing for fraud signals.
 
     Returns a dict with keys: available, signals, analysis.
     Falls back gracefully if Ollama is not running.
@@ -72,12 +96,13 @@ async def analyze_listing_for_fraud(listing_text: str, company_name: str) -> Dic
     )
 
     try:
-        timeout = httpx.Timeout(20.0, connect=1.0)
+        timeout = httpx.Timeout(25.0, connect=1.0)
         async with httpx.AsyncClient(timeout=timeout) as client:
+            model_to_use = await _resolve_model(client)
             response = await client.post(
                 f"{settings.OLLAMA_BASE_URL}/api/generate",
                 json={
-                    "model": settings.OLLAMA_MODEL,
+                    "model": model_to_use,
                     "prompt": prompt,
                     "stream": False,
                     "format": "json",
@@ -89,6 +114,7 @@ async def analyze_listing_for_fraud(listing_text: str, company_name: str) -> Dic
             parsed = json.loads(raw_text)
             return {
                 "available": True,
+                "model": model_to_use,
                 "signals": parsed.get("suspicious_signals", []),
                 "analysis": parsed.get("overall_assessment", "No assessment provided."),
                 "red_flags_found": parsed.get("red_flags_found", False),
@@ -116,7 +142,7 @@ async def tailor_resume_content(
     job_description: str,
     target_role: str,
 ) -> Dict[str, Any]:
-    """Use Ollama to tailor resume sections for a specific job description.
+    """Use Ollama (Google Gemma 2) to tailor resume sections for a specific job description.
 
     Returns a dict with tailored_sections and changes_made.
     Falls back to a basic restructure if Ollama is unavailable.
@@ -128,12 +154,13 @@ async def tailor_resume_content(
     )
 
     try:
-        timeout = httpx.Timeout(20.0, connect=1.0)
+        timeout = httpx.Timeout(25.0, connect=1.0)
         async with httpx.AsyncClient(timeout=timeout) as client:
+            model_to_use = await _resolve_model(client)
             response = await client.post(
                 f"{settings.OLLAMA_BASE_URL}/api/generate",
                 json={
-                    "model": settings.OLLAMA_MODEL,
+                    "model": model_to_use,
                     "prompt": prompt,
                     "stream": False,
                     "format": "json",
@@ -145,6 +172,7 @@ async def tailor_resume_content(
             parsed = json.loads(raw_text)
             return {
                 "available": True,
+                "model": model_to_use,
                 "tailored_sections": parsed.get("tailored_sections", {}),
                 "changes_made": parsed.get("changes_made", []),
             }

@@ -94,7 +94,7 @@ export default function TrustCheckScannerPage() {
           Internship TrustCheck Scanner
         </h1>
         <p className="mt-3 text-secondary-text text-sm sm:text-base leading-relaxed">
-          Verify before you apply. Combines 10 deterministic security rules (SSRF mitigation, domain comparison, keyword detection) with open-weight language inference via Llama 3.2.
+          Verify before you apply. Combines 10 deterministic security rules (SSRF mitigation, domain comparison, keyword detection) with open-weight language inference via Google Gemma 2 (Ollama).
         </p>
       </div>
 
@@ -239,7 +239,7 @@ export default function TrustCheckScannerPage() {
             <div className="text-right">
               <div className="text-xs text-secondary-text">AI Inference Engine:</div>
               <Badge variant="outline" className="border-champagne/40 text-champagne text-xs mt-1">
-                {report.ai_available ? 'Ollama Llama 3.2 (Active)' : 'Deterministic Rules Mode'}
+                {report.ai_available ? 'Ollama Gemma 2 (Active)' : 'Deterministic Rules Mode'}
               </Badge>
             </div>
           </div>

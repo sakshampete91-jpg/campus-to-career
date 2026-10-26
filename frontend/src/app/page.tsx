@@ -98,8 +98,8 @@ export default function HomePage() {
             <div className="text-xs sm:text-sm text-secondary-text mt-1">Open Source Platform</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-champagne">llama3.2:1b</div>
-            <div className="text-xs sm:text-sm text-secondary-text mt-1">Local Open-Weight AI</div>
+            <div className="text-2xl sm:text-3xl font-bold text-champagne">Gemma 2:2B</div>
+            <div className="text-xs sm:text-sm text-secondary-text mt-1">Google Open-Weight AI (Ollama)</div>
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-primary-text">10 Signals</div>
@@ -243,7 +243,7 @@ export default function HomePage() {
                 </div>
               </div>
               <Badge variant="outline" className="border-champagne/40 text-champagne text-xs">
-                Deterministic + Llama 3.2
+                Deterministic + Gemma 2 (Ollama)
               </Badge>
             </div>
 

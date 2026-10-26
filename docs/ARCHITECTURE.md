@@ -243,7 +243,7 @@ All AI calls go through `core/ollama_client.py`:
 ```python
 class OllamaClient:
     base_url: str          # from OLLAMA_BASE_URL env var
-    model: str             # from OLLAMA_MODEL env var (llama3.2:1b)
+    model: str             # from OLLAMA_MODEL env var (gemma2:2b)
     timeout: int = 60      # seconds
 
     async def generate(self, prompt: str) -> str: ...
@@ -300,7 +300,7 @@ User pastes listing text
          ▼
 ┌─────────────────────┐
 │  Ollama LLM Scan     │  ← Contextual understanding
-│  (llama3.2:1b)       │    Detects nuanced red flags
+│  (Google Gemma 2)    │    Detects nuanced red flags
 │                      │    Returns structured JSON
 └────────┬────────────┘
          │
@@ -354,7 +354,7 @@ User uploads PDF/DOCX + selects target role
            │
            ▼
 ┌──────────────────────────┐
-│  Ollama LLM Tailoring     │  ← llama3.2:1b generates tailored content
+│  Ollama LLM Tailoring     │  ← Google Gemma 2 (gemma2:2b) generates tailored content
 │                           │    (reorders, emphasizes, adds keywords)
 └──────────┬───────────────┘
            │

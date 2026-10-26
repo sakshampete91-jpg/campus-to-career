@@ -2,13 +2,14 @@
 
 > **From Skills to Opportunities.**
 
-[![CI](https://github.com/your-org/campus-to-career/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/campus-to-career/actions/workflows/ci.yml)
+[![CI](https://github.com/sakshampete91-jpg/campus-to-career/actions/workflows/ci.yml/badge.svg)](https://github.com/sakshampete91-jpg/campus-to-career/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
+[![Ollama: Gemma 2](https://img.shields.io/badge/AI-Google_Gemma_2_(2B)-emerald.svg)](https://ollama.com/library/gemma2)
 [![Hacktoberfest 2026](https://img.shields.io/badge/Hacktoberfest-2026-orange.svg)](https://hacktoberfest.com/)
 
-**Campus to Career** is an open-source, AI-powered career platform that connects students with legitimate internship and job opportunities — anywhere, from any college. It uses a locally-running AI model (Meta Llama 3.2 via Ollama) to tailor resumes, flag suspicious listings, and match students to roles based on skills — with zero subscription fees and full transparency.
+**Campus to Career** is an open-source, AI-powered career platform that connects students with legitimate internship and job opportunities — anywhere, from any college. It uses a locally-running open-weight AI model (**Google Gemma 2 via Ollama**) to tailor resumes, flag suspicious listings, and match students to roles based on skills — with zero subscription fees, zero cloud data leakage, and full transparency.
 
 ---
 
@@ -30,7 +31,7 @@
 This project was built for **Hacktoberfest 2026** in the **Best Open-Source AI Project** category.
 
 - ✅ Fully open-source (MIT License)
-- ✅ AI powered by an open-weight model (Meta Llama 3.2, 1B parameters)
+- ✅ AI powered by an open-weight model (Google Gemma 2: 2B parameters)
 - ✅ Locally-running AI — no API keys, no cloud AI costs
 - ✅ Student-focused, no college/institutional lock-in
 - ✅ End-to-end tested with CI/CD
@@ -60,7 +61,7 @@ This project was built for **Hacktoberfest 2026** in the **Best Open-Source AI P
 | **ORM** | SQLAlchemy 2.0, Alembic | Database access and migrations |
 | **Database** | SQLite (dev) / PostgreSQL (prod-ready) | Persistent data storage |
 | **AI Runtime** | [Ollama](https://ollama.com/) | Local LLM inference server |
-| **AI Model** | `llama3.2:1b` (Meta Llama 3.2) | Resume tailoring, TrustCheck |
+| **AI Model** | `gemma2:2b` (Google Gemma 2) | Resume tailoring, TrustCheck contextual analysis |
 | **Authentication** | JWT (python-jose), bcrypt | Stateless auth tokens |
 | **PDF Generation** | WeasyPrint | Tailored resume PDF export |
 | **Testing (BE)** | pytest, pytest-cov, httpx | Backend unit + integration tests |
@@ -72,16 +73,16 @@ This project was built for **Hacktoberfest 2026** in the **Best Open-Source AI P
 
 ## 🤖 AI Model Information
 
-Campus to Career uses **Meta Llama 3.2 (1B parameters)** running locally via **Ollama**.
+Campus to Career uses **Google Gemma 2 (2B parameters)** running locally via **Ollama**.
 
-- **Model tag:** `llama3.2:1b`
-- **Provider:** [Ollama](https://ollama.com/)
-- **License:** [Meta Llama 3.2 Community License](https://www.llama.com/llama3_2/license/)
-- **Why local?** All inference happens on your machine. No student data is sent to external AI services.
-- **Hardware:** Runs on CPU with ~2 GB RAM. GPU optional (speeds up inference significantly).
+- **Model tag:** `gemma2:2b`
+- **Provider:** [Google DeepMind / Ollama](https://ollama.com/library/gemma2)
+- **License:** [Gemma Terms of Use](https://ai.google.dev/gemma/terms) (Open-weight permissive license)
+- **Why local?** All inference happens locally on the host machine. Student resumes and sensitive career queries never leave the device.
+- **Hardware:** Extremely lightweight (~1.6 GB VRAM/RAM required). Fast on standard CPUs and modern laptops.
 
 > [!NOTE]
-> The 1B model is intentionally small for accessibility. Teams with more powerful hardware can swap to `llama3.2:3b` by changing `OLLAMA_MODEL` in `.env`.
+> `gemma2:2b` is lightweight and fast for hackathon evaluation. The platform also seamlessly detects and supports `gemma:2b` or larger models by updating `OLLAMA_MODEL` in `.env`.
 
 ---
 

@@ -525,7 +525,7 @@ export default function ResumeTailorPage() {
               </h2>
               <div className="mt-2 text-xs text-slate-700">
                 <div className="font-semibold text-slate-900">Campus to Career Open-Source Platform</div>
-                <div className="text-[11px] text-slate-500">FastAPI, Next.js, ReportLab, Llama 3.2</div>
+                <div className="text-[11px] text-slate-500">FastAPI, Next.js, ReportLab, Google Gemma 2 (Ollama)</div>
                 <p className="mt-1">
                   Engineered full-stack career platform with deterministic fraud-risk detection and truth-preserving resume tailoring.
                 </p>
